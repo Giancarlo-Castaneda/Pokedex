@@ -1,10 +1,3 @@
-//
-//  ImageDownloader.swift
-//  Pokedex
-//
-//  Created by Giancarlo Castañeda Garcia on 9/02/24.
-//
-
 import SwiftUI
 
 final class ImageDownloader: ObservableObject {
@@ -12,6 +5,7 @@ final class ImageDownloader: ObservableObject {
     // MARK: - Internal Properties
 
     @Published var image: UIImage?
+    @Published var imageColor: Color?
     var urlString: String?
     var imageCache = DownloadedImageCache.getImageCache()
 
@@ -40,6 +34,9 @@ final class ImageDownloader: ObservableObject {
         }
 
         image = cacheImage
+        if let color = cacheImage.averageColor {
+            imageColor = Color(color)
+        }
         return true
     }
 
@@ -69,6 +66,9 @@ final class ImageDownloader: ObservableObject {
             }
             self.imageCache.set(forKey: urlString, image: loadedImage)
             self.image = loadedImage
+            if let color = self.image?.averageColor {
+                self.imageColor = Color(color)
+            }
         }
     }
 }

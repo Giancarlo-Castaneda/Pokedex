@@ -25,7 +25,11 @@ struct DeviceRotationViewModifier: ViewModifier {
         content
             .onAppear()
             .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
-                action(UIDevice.current.orientation)
+                let deviceOrientation = UIDevice.current.orientation
+
+                if deviceOrientation != .faceDown && deviceOrientation != .faceUp {
+                    action(UIDevice.current.orientation)
+                }
             }
     }
 }

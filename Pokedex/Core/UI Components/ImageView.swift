@@ -1,23 +1,30 @@
-//
-//  ImageView.swift
-//  Pokedex
-//
-//  Created by Giancarlo Castañeda Garcia on 9/02/24.
-//
-
-import Combine
 import SwiftUI
 
 struct ImageView: View {
 
-    @ObservedObject var imageLoader: ImageDownloader
+    @ObservedObject var imageDownloader: ImageDownloader
+    private var imageColor: Binding<Color?>?
 
-    init(withURL url: URL) {
-        imageLoader = ImageDownloader(urlString: url.absoluteString)
+    init(urlString: String, imageColor: Binding<Color?>? = nil) {
+        self.imageDownloader = ImageDownloader(urlString: urlString)
+        self.imageColor = imageColor
     }
 
     var body: some View {
-        Image(uiImage: imageLoader.image ?? UIImage() )
-            .resizable()
+        Group {
+            if let image = imageDownloader.image {
+                Image(uiImage: image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .onAppear {
+                        imageColor?.wrappedValue = imageDownloader.imageColor
+                    }
+            } else {
+                ProgressView()
+                    .frame(width: 200, height: 300)
+            }
+        }
+        .padding()
     }
 }

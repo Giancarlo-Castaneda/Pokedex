@@ -1,10 +1,3 @@
-//
-//  PokemonDetailView.swift
-//  Pokedex
-//
-//  Created by Giancarlo Castañeda Garcia on 12/02/24.
-//
-
 import SwiftUI
 
 struct PokemonDetailView: View {
@@ -22,19 +15,19 @@ struct PokemonDetailView: View {
     var body: some View {
         ScrollView {
             VStack {
-                ZStack {
+                ZStack(alignment: .top) {
                     Rectangle()
                         .fill(
                             LinearGradient(colors: detailViewModel.headerColor, startPoint: .top, endPoint: .bottom)
                         )
                         .roundedCorner(.infinity, corners: [.bottomLeft, .bottomRight])
-                        .offset(CGSize(width: 0, height: orientation.isPortrait ? -60.0 : 0))
+                        .frame(height: 200)
 
                     if let image = detailViewModel.pokemonDetail.image {
                         PokemonDetailHeader(image: image,
                                             showEvolutions: $showingEvolutionsSheet,
                                             showEvolutionButton: detailViewModel.isEvolutionAvailable)
-                        .padding(.top, orientation.isPortrait ? 100 : 0)
+                        .padding(.top, orientation.isPortrait ? 80 : 10)
                     }
                 }
 
@@ -101,8 +94,8 @@ private struct PokemonDetailHeader: View {
             }
             HStack {
                 Spacer()
-                PokemonImageView(imageURL: image)
-                    .frame(maxWidth: 300, maxHeight: 300)
+                PokemonImageView(imageURL: image, backColor: .constant(nil))
+                    .frame(height: 250)
                 Spacer()
             }
         }
@@ -167,7 +160,7 @@ private struct PokemonInGamePreviewView: View {
                     ForEach(viewModel.pokemonDetail.inGameImages, id: \.id) { inGame in
                         Spacer()
                         VStack {
-                            ImageView(withURL: inGame.image)
+                            ImageView(urlString: inGame.image.absoluteString)
                                 .aspectRatio(contentMode: .fit)
                                 .background(
                                     RoundedRectangle(cornerRadius: 45)

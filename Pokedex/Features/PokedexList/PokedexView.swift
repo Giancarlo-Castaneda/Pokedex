@@ -1,34 +1,47 @@
-//
-//  PokedexView.swift
-//  Pokedex
-//
-//  Created by Giancarlo Castañeda Garcia on 9/02/24.
-//
-
 import SwiftUI
 
 struct PokedexView: View {
 
-    // MARK: - Private Properties
-
-    private let cancelable = Cancelable()
-    private let columns = [
-        GridItem(.adaptive(minimum: 100, maximum: 500)),
-        GridItem(.adaptive(minimum: 100, maximum: 500))
-    ]
-    @State private var isLoading = true
-
     @StateObject var viewModel: PokedexListViewModel = .init()
 
+    var isPad: Bool {
+        UIDevice.current.userInterfaceIdiom == .pad
+    }
+
+    var columns: Int {
+        (isPad || isLandscape) ? 3 : 2
+    }
+
+    var itemWidth: CGFloat {
+        let screenWidth = UIScreen.main.bounds.width
+        return (screenWidth - CGFloat((columns + 1) * 10)) / CGFloat(columns)
+    }
+
+    var cardHeigth: CGFloat {
+        itemWidth * ((isPad || isLandscape) ? 1.2 : 1.6)
+    }
+
+    // MARK: - Private Properties
+
+    @State private var isLoading = true
+    @State private var isLandscape = UIDevice.current.orientation.isLandscape
+    private let cancelable = Cancelable()
+    private var orientationDidChange = NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)
+
+
     var body: some View {
+
         NavigationStack {
             ScrollView(showsIndicators: false) {
-                LazyVGrid(columns: columns, content: {
+                LazyVGrid(
+                    columns: Array(repeating: GridItem(.fixed(itemWidth), spacing: 10), count: columns)
+                ) {
                     ForEach(viewModel.pokemonList, id: \.self) { pokemon in
                         NavigationLink {
                             PokemonDetailView(id: pokemon.id)
                         } label: {
                             PokemonCardView(pokemon: pokemon)
+                                .frame(height: cardHeigth)
                                 .onAppear() {
                                     if viewModel.shouldLoadNewPokemons(for: pokemon) {
                                         viewModel.getPokemonData()
@@ -46,7 +59,7 @@ struct PokedexView: View {
                                 }
                             }
                     }
-                })
+                }
             }
             .padding(.horizontal, 5)
             .navigationTitle("POKEDEX")
@@ -55,12 +68,15 @@ struct PokedexView: View {
                 handleState()
                 viewModel.getPokemonData()
             }
+            .onRotate { newOrientation in
+                isLandscape = newOrientation.isLandscape
+            }
         }
     }
 }
 
 #Preview {
-    PokedexView(viewModel: PokedexListViewModel())
+    PokedexView()
 }
 
 extension PokedexView {

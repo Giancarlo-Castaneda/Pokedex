@@ -13,8 +13,8 @@ struct PokemonEvolutionCardView: View {
     var body: some View {
         HStack {
             if let image = pokemon.image {
-                PokemonImageView(imageURL: image)
-                    .frame(height: 100)
+                PokemonImageView(imageURL: image, backColor: .constant(nil))
+                    .frame(width: 100)
             }
             VStack(alignment: .leading) {
                 Text(pokemon.name)
@@ -24,7 +24,7 @@ struct PokemonEvolutionCardView: View {
                     .font(.caption)
             }
         }
-        .frame(width: 280)
+        .frame(width: 280, height: 100)
         .background {
             RoundedRectangle(cornerRadius: 70, style: .continuous)
                 .fill(Color.lightConstrast)
